@@ -1,14 +1,15 @@
 //
 //  Gui.h
 //
-//  Created by Atsushi Tadokoro on 2/14/16.
+//  Initially created by Atsushi Tadokoro on 2/14/16.
 //
 //
 
 #pragma once
+#include <ofxAppUtils.h>
 #include "Chain.h"
 #include "Uniforms.h"
-#include "ofxGui.h"
+#include "ofxGuiExtended.h"
 
 OFX_ISF_BEGIN_NAMESPACE
 
@@ -28,7 +29,9 @@ public:
     
     void setup(Chain *_chain){
         chain = _chain;
-        gui.setup();
+        ISFPanel = gui.addPanel("ISF Chain");
+//      ISFPanel->loadTheme("assets/themes/ofxGuiExtended/myTheme.json");
+        ISFPanel->setPosition(0,0);
     }
     
     void addGuiParameters(){
@@ -39,7 +42,7 @@ public:
         ofParameter<bool> isEnable;
         isEnable.set("Enable", true);
         gr.parameters.add(isEnable);
-        gr.types.push_back("enebale");
+        gr.types.push_back("enable");
         
         for (int i = 0; i < chain->getShader(j)->getInputs().size(); i++) {
             string name = chain->getShader(j)->getInputs().getUniform(i)->getName();
@@ -83,7 +86,7 @@ public:
                 type = "ofTexture";
             }
         }
-        gui.add(gr.parameters);
+        ISFPanel->add(gr.parameters);
         guiParams.push_back(gr);
     }
     
@@ -93,7 +96,7 @@ public:
                 string name = guiParams[j].parameters[i].getName();
                 string type = guiParams[j].types[i];
                 
-                if (type == "enebale") {
+                if (type == "enable") {
                     ofParameter<bool> value = guiParams[j].parameters.getBool(name);
                     chain->setEnable(j, value);
                 }
@@ -114,11 +117,8 @@ public:
         }
     }
     
-    void draw(){
-        gui.draw();
-    }
-    
-    ofxPanel gui;
+    ofxGui gui;
+    ofxGuiPanel *ISFPanel;
     vector<ISFGuiParameters> guiParams;
     Chain *chain;
 };
